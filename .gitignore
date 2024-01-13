@@ -1,6 +1,10 @@
 # Visual Studio 2015 user specific files
 .vs/
-.vsconfing
+.vsconfig
+
+# Rider
+
+.idea/
 
 # Compiled Object files
 *.slo
