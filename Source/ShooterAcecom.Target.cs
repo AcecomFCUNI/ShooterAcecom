@@ -10,6 +10,6 @@ public class ShooterAcecomTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
-		ExtraModuleNames.Add("ShooterAcecom");
+		ExtraModuleNames.Add("ShooterAcecom"); 
 	}
 }
