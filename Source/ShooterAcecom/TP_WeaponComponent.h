@@ -15,8 +15,8 @@ class SHOOTERACECOM_API UTP_WeaponComponent : public USkeletalMeshComponent
 
 public:
 	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class AShooterAcecomProjectile> ProjectileClass;
+	//UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	//TSubclassOf<class AShooterAcecomProjectile> ProjectileClass;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -48,6 +48,10 @@ public:
 	/** Make the weapon Fire a Projectile */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
+
+	/** Fire range*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float ShootRange;
 
 protected:
 	/** Ends gameplay for this component. */

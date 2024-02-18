@@ -3,7 +3,9 @@
 
 #include "TP_WeaponComponent.h"
 #include "ShooterAcecomCharacter.h"
-#include "ShooterAcecomProjectile.h"
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+#include "DrawDebugHelpers.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,6 +17,7 @@ UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+	ShootRange = 1000.0f;
 }
 
 
@@ -25,23 +28,25 @@ void UTP_WeaponComponent::Fire()
 		return;
 	}
 
-	// Try and fire a projectile
-	if (ProjectileClass != nullptr)
-	{
-		UWorld* const World = GetWorld();
-		if (World != nullptr)
-		{
-			APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
-			const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
+	APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
+	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
 	
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	
-			// Spawn the projectile at the muzzle
-			World->SpawnActor<AShooterAcecomProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	FVector start = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
+	FVector foward = Character->GetActorForwardVector();
+	FVector end = start + foward * ShootRange;
+	FHitResult hit;
+
+	if(GetWorld()) {
+		bool actorHit = GetWorld()->LineTraceSingleByChannel(
+			hit,
+			start,
+			end,
+			ECC_Pawn,
+			FCollisionQueryParams(),
+			FCollisionResponseParams());
+		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2, 0, 10);
+		if(actorHit && hit.GetActor()) {
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, hit.GetActor()->GetFName().ToString());
 		}
 	}
 	
