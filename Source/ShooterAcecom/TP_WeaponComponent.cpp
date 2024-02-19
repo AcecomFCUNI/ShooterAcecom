@@ -11,13 +11,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values for this component's properties
 UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
-	ShootRange = 1000.0f;
+	ShootRange = 10000.0f;
 }
 
 
@@ -31,8 +32,11 @@ void UTP_WeaponComponent::Fire()
 	APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
 	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
 	
-	FVector start = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
-	FVector foward = Character->GetActorForwardVector();
+	//Cast<AShooterAcecomCharacter>(GetOwner())->GetFirstPersonCameraComponent()->GetComponentToWorld().GetLocation();
+	//Cast<AShooterAcecomCharacter>(GetOwner())->GetFirstPersonCameraComponent()->GetForwardVector();
+	
+	FVector foward = Character->GetFirstPersonCameraComponent()->GetForwardVector();
+	FVector start = Character->GetFirstPersonCameraComponent()->GetComponentToWorld().GetLocation() + foward * 50;
 	FVector end = start + foward * ShootRange;
 	FHitResult hit;
 
