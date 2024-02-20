@@ -14,29 +14,18 @@
 #include "Camera/CameraComponent.h"
 
 // Sets default values for this component's properties
-UTP_WeaponComponent::UTP_WeaponComponent()
-{
-	// Default offset from the character location for projectiles to spawn
-	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+UTP_WeaponComponent::UTP_WeaponComponent() {
 	ShootRange = 10000.0f;
 }
 
 
-void UTP_WeaponComponent::Fire()
-{
-	if (Character == nullptr || Character->GetController() == nullptr)
-	{
+void UTP_WeaponComponent::Fire() {
+	if (Character == nullptr || Character->GetController() == nullptr) {
 		return;
 	}
-
-	APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
-	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
 	
-	//Cast<AShooterAcecomCharacter>(GetOwner())->GetFirstPersonCameraComponent()->GetComponentToWorld().GetLocation();
-	//Cast<AShooterAcecomCharacter>(GetOwner())->GetFirstPersonCameraComponent()->GetForwardVector();
-	
-	FVector foward = Character->GetFirstPersonCameraComponent()->GetForwardVector();
-	FVector start = Character->GetFirstPersonCameraComponent()->GetComponentToWorld().GetLocation() + foward * 50;
+	FVector foward = Character->GetCameraComponent()->GetForwardVector();
+	FVector start = Character->GetCameraComponent()->GetComponentToWorld().GetLocation() + foward * 50;
 	FVector end = start + foward * ShootRange;
 	FHitResult hit;
 
@@ -55,66 +44,60 @@ void UTP_WeaponComponent::Fire()
 	}
 	
 	// Try and play the sound if specified
-	if (FireSound != nullptr)
-	{
+	if (FireSound != nullptr) {
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
 	}
 	
 	// Try and play a firing animation if specified
-	if (FireAnimation != nullptr)
-	{
+	if (FireAnimation != nullptr) {
 		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
+		//UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
+		// if (AnimInstance != nullptr)
+		// {
+		// 	AnimInstance->Montage_Play(FireAnimation, 1.f);
+		// }
 	}
 }
 
-void UTP_WeaponComponent::AttachWeapon(AShooterAcecomCharacter* TargetCharacter)
-{
+void UTP_WeaponComponent::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
 	Character = TargetCharacter;
-	if (Character == nullptr)
-	{
+	if (Character == nullptr) {
 		return;
 	}
 
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
+	AttachToComponent(Character->GetMesh(), AttachmentRules);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *Character->GetMesh()->GetChildComponent(0)->GetName());
+	
+	Character->GetMesh()->GetChildComponent(0)->SetRelativeLocation(FVector(21, 17, 40));
+	Character->GetMesh()->GetChildComponent(0)->SetRelativeRotation(FRotator(0, -90,0 ).Quaternion());
 	
 	// switch bHasRifle so the animation blueprint can switch to another animation set
 	Character->SetHasRifle(true);
 
 	// Set up action bindings
-	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
+	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController())) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
 			// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
 			Subsystem->AddMappingContext(FireMappingContext, 1);
 		}
 
-		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
-		{
+		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent)) {
 			// Fire
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
 		}
 	}
 }
 
-void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if (Character == nullptr)
-	{
+void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	if (Character == nullptr) {
 		return;
 	}
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
+	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController())) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
 			Subsystem->RemoveMappingContext(FireMappingContext);
 		}
 	}
