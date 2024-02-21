@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "AbilitySystemComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -107,4 +108,29 @@ void AShooterAcecomCharacter::SetHasRifle(bool bNewHasRifle)
 bool AShooterAcecomCharacter::GetHasRifle()
 {
 	return bHasRifle;
+}
+
+void AShooterAcecomCharacter::GrantAbility(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level, int32 InputCode)
+{
+	if (GetLocalRole() == ROLE_Authority && IsValid(AbilitySystemComponent) && IsValid(AbilityClass))
+	{
+		UGameplayAbility* Ability = AbilityClass->GetDefaultObject<UGameplayAbility>();
+		if (IsValid(Ability))
+		{
+			FGameplayAbilitySpec AbilitySpec(
+				Ability,
+				Level,
+				InputCode
+			);
+			AbilitySystemComponent->GiveAbility(AbilitySpec);
+		}
+	}
+}
+
+void AShooterAcecomCharacter::ActivateAbility(int32 InputCode)
+{
+	if (IsValid(AbilitySystemComponent))
+	{
+		AbilitySystemComponent->AbilityLocalInputPressed(InputCode);
+	}
 }

@@ -78,6 +78,12 @@ protected:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void GrantAbility(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level, int32 InputCode);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void ActivateAbility(int32 InputCode);
+
 public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetCameraComponent() const { return CameraComponent; }
