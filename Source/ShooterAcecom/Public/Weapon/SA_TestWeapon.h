@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RangedWeapon.h"
-#include "TestWeapon.generated.h"
+#include "Weapon/SA_RangedWeapon.h"
+#include "SA_TestWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SHOOTERACECOM_API UTestWeapon : public URangedWeapon {
+class SHOOTERACECOM_API USA_TestWeapon : public USA_RangedWeapon {
 	GENERATED_BODY()
 
 	virtual void Fire() override;

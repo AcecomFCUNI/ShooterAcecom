@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WeaponBase.h"
-#include "MeleeWeapon.generated.h"
+#include "Weapon/SA_WeaponBase.h"
+#include "SA_MeleeWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SHOOTERACECOM_API UMeleeWeapon : public UWeaponBase {
+class SHOOTERACECOM_API USA_MeleeWeapon : public USA_WeaponBase {
 	GENERATED_BODY()
-
-	virtual void WeaponAction() override;
+	
 };

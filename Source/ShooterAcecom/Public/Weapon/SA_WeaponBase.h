@@ -4,15 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "WeaponBase.generated.h"
+#include "ShooterAcecom/ShooterAcecomCharacter.h"
+#include "SA_WeaponBase.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract)
-class SHOOTERACECOM_API UWeaponBase : public USkeletalMeshComponent {
+class SHOOTERACECOM_API USA_WeaponBase : public USkeletalMeshComponent {
 	GENERATED_BODY()
 
 	UFUNCTION()
 	virtual void WeaponAction();
+
+protected:
+	/** The Character holding this weapon*/
+
+	AShooterAcecomCharacter* Character;
 };
