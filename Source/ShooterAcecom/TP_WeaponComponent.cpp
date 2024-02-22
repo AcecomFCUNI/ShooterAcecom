@@ -15,7 +15,18 @@
 
 // Sets default values for this component's properties
 UTP_WeaponComponent::UTP_WeaponComponent() {
+	PrimaryComponentTick.bCanEverTick = true;
 	ShootRange = 10000.0f;
+	bCanFire = true;
+	FireRate = .5f;
+}
+
+void UTP_WeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	Fire();
 }
 
 
@@ -23,7 +34,19 @@ void UTP_WeaponComponent::Fire() {
 	if (Character == nullptr || Character->GetController() == nullptr) {
 		return;
 	}
-	
+
+	if(!bIsFiring || !bCanFire)
+	{
+		return;
+	}
+
+	bCanFire = false;
+	FTimerHandle TimerHandler;
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandler, [&] {
+		bCanFire = true;
+	}, FireRate, false);
+
 	FVector foward = Character->GetCameraComponent()->GetForwardVector();
 	FVector start = Character->GetCameraComponent()->GetComponentToWorld().GetLocation() + foward * 50;
 	FVector end = start + foward * ShootRange;
@@ -59,6 +82,17 @@ void UTP_WeaponComponent::Fire() {
 	}
 }
 
+void UTP_WeaponComponent::SetFire()
+{
+	bIsFiring = true;
+}
+
+void UTP_WeaponComponent::ReleaseFire()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Release"));
+	bIsFiring = false;
+}
+
 void UTP_WeaponComponent::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
 	Character = TargetCharacter;
 	if (Character == nullptr) {
@@ -86,7 +120,9 @@ void UTP_WeaponComponent::AttachWeapon(AShooterAcecomCharacter* TargetCharacter)
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent)) {
 			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::SetFire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &UTP_WeaponComponent::ReleaseFire);
+
 		}
 	}
 }

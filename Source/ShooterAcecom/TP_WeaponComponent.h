@@ -13,7 +13,25 @@ class SHOOTERACECOM_API UTP_WeaponComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 
-public:
+
+protected:
+	/** The Character holding this weapon*/
+	UPROPERTY()
+	AShooterAcecomCharacter* Character;
+
+	UPROPERTY(EditAnywhere)
+	bool bIsFiring;
+
+	UPROPERTY(EditAnywhere)
+	float FireRate;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bCanFire;
+
+	/** Fire range*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float ShootRange;
+
 	/** Projectile class to spawn */
 	//UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	//TSubclassOf<class AShooterAcecomProjectile> ProjectileClass;
@@ -38,8 +56,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
 
+public:
+
 	/** Sets default values for this component's properties */
 	UTP_WeaponComponent();
+
+private:
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
@@ -49,16 +73,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
 
-	/** Fire range*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float ShootRange;
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void ReleaseFire();
 
 protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-private:
-	/** The Character holding this weapon*/
-	AShooterAcecomCharacter* Character;
 };
