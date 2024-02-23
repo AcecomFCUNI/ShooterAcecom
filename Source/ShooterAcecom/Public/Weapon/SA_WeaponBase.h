@@ -14,11 +14,13 @@ UCLASS(Abstract)
 class SHOOTERACECOM_API USA_WeaponBase : public USkeletalMeshComponent {
 	GENERATED_BODY()
 
+protected:
+	/** The Character holding this weapon*/
+	AShooterAcecomCharacter* Character;
+
 	UFUNCTION()
 	virtual void WeaponAction();
 
-protected:
-	/** The Character holding this weapon*/
+	
 
-	AShooterAcecomCharacter* Character;
 };

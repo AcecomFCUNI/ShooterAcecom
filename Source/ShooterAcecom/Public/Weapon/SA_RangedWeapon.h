@@ -12,15 +12,16 @@
 UCLASS(Abstract)
 class SHOOTERACECOM_API USA_RangedWeapon : public USA_WeaponBase {
 	GENERATED_BODY()
+protected:
 	
-	virtual void WeaponAction() override;
-	
-	UFUNCTION()
-	virtual void Fire();
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	bool bIsFiring;
 
-public:
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	float FireRate;
 
-	USA_RangedWeapon();
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	bool bCanFire;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* FireSound;
@@ -39,6 +40,24 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float ShootRange;
+
+public:
+	USA_RangedWeapon();
+
+protected:
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual void WeaponAction() override;
+	
+	UFUNCTION()
+	virtual void Fire();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void ReleaseFire();
 	
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	virtual void AttachWeapon(AShooterAcecomCharacter* TargetCharacter);

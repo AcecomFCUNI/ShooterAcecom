@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTERACECOM_API USA_MeleeWeapon : public USA_WeaponBase {
 	GENERATED_BODY()
 	

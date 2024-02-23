@@ -10,7 +10,15 @@
 #include "ShooterAcecom/ShooterAcecomCharacter.h"
 
 USA_RangedWeapon::USA_RangedWeapon() {
-	ShootRange = 10000.0f;
+	PrimaryComponentTick.bCanEverTick = true;
+	bCanFire = true;
+}
+
+void USA_RangedWeapon::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction){
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	Fire();
 }
 
 void USA_RangedWeapon::WeaponAction() {
@@ -21,6 +29,19 @@ void USA_RangedWeapon::Fire() {
 	if (Character == nullptr || Character->GetController() == nullptr) {
 		return;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("WeaponAction2"))
+
+	if(!bIsFiring || !bCanFire){
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("WeaponAction1"))
+
+	bCanFire = false;
+	FTimerHandle TimerHandler;
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandler, [&] {
+		bCanFire = true;
+	}, FireRate, false);
 
 	FVector foward = Character->GetCameraComponent()->GetForwardVector();
 	FVector start = Character->GetCameraComponent()->GetComponentToWorld().GetLocation() + foward * 50;
@@ -40,7 +61,7 @@ void USA_RangedWeapon::Fire() {
 			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, hit.GetActor()->GetFName().ToString());
 		}
 	}
-
+	
 	// Try and play the sound if specified
 	if (FireSound != nullptr) {
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
@@ -48,13 +69,21 @@ void USA_RangedWeapon::Fire() {
 	
 	// Try and play a firing animation if specified
 	if (FireAnimation != nullptr) {
-		// Get the animation object for the arms mesh
-		//UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
-		// if (AnimInstance != nullptr)
-		// {
+		// // Get the animation object for the arms mesh
+		// UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
+		// if (AnimInstance != nullptr){
 		// 	AnimInstance->Montage_Play(FireAnimation, 1.f);
 		// }
 	}
+}
+
+void USA_RangedWeapon::SetFire(){
+	bIsFiring = true;
+}
+
+void USA_RangedWeapon::ReleaseFire(){
+	UE_LOG(LogTemp, Warning, TEXT("Release"));
+	bIsFiring = false;
 }
 
 void USA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
@@ -84,7 +113,9 @@ void USA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent)) {
 			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &USA_RangedWeapon::WeaponAction);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &USA_RangedWeapon::SetFire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &USA_RangedWeapon::ReleaseFire);
+
 		}
 	}
 }

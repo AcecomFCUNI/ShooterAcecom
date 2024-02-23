@@ -3,6 +3,8 @@
 
 #include "Weapon\SA_TestWeapon.h"
 
-void USA_TestWeapon::Fire() {
-	UE_LOG(LogTemp, Warning, TEXT("Fire, Fire!"))
+USA_TestWeapon::USA_TestWeapon() {
+	ShootRange = 1000.0f;
+	FireRate = .5f;
 }
+

@@ -9,9 +9,11 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTERACECOM_API USA_TestWeapon : public USA_RangedWeapon {
 	GENERATED_BODY()
-
-	virtual void Fire() override;
+	
+public:
+	 USA_TestWeapon();
+	
 };
