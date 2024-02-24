@@ -30,12 +30,10 @@ void ASA_RangedWeapon::Fire() {
 	if (Character == nullptr || Character->GetController() == nullptr) {
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("WeaponAction2"))
 
 	if(!bIsFiring || !bCanFire){
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("WeaponAction1"))
 
 	bCanFire = false;
 	FTimerHandle TimerHandler;
