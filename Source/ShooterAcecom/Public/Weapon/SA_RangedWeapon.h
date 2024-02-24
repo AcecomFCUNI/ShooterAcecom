@@ -10,7 +10,7 @@
  * 
  */
 UCLASS(Abstract)
-class SHOOTERACECOM_API USA_RangedWeapon : public USA_WeaponBase {
+class SHOOTERACECOM_API ASA_RangedWeapon : public ASA_WeaponBase {
 	GENERATED_BODY()
 protected:
 	
@@ -42,11 +42,11 @@ protected:
 	float ShootRange;
 
 public:
-	USA_RangedWeapon();
+	ASA_RangedWeapon();
 
 protected:
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
 
 	virtual void WeaponAction() override;
 	

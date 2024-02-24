@@ -11,7 +11,7 @@
  * 
  */
 UCLASS(Abstract)
-class SHOOTERACECOM_API USA_WeaponBase : public USkeletalMeshComponent {
+class SHOOTERACECOM_API ASA_WeaponBase : public AActor {
 	GENERATED_BODY()
 
 protected:

@@ -9,23 +9,24 @@
 #include "Kismet/GameplayStatics.h"
 #include "ShooterAcecom/ShooterAcecomCharacter.h"
 
-USA_RangedWeapon::USA_RangedWeapon() {
-	PrimaryComponentTick.bCanEverTick = true;
+ASA_RangedWeapon::ASA_RangedWeapon() {
+	PrimaryActorTick.bCanEverTick = true;
 	bCanFire = true;
 }
 
-void USA_RangedWeapon::TickComponent(float DeltaTime, ELevelTick TickType,
-	FActorComponentTickFunction* ThisTickFunction){
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+void ASA_RangedWeapon::TickActor(float DeltaTime, ELevelTick TickType,
+	FActorTickFunction& ThisTickFunction) {
+	Super::TickActor(DeltaTime, TickType, ThisTickFunction);
 
 	Fire();
 }
 
-void USA_RangedWeapon::WeaponAction() {
+
+void ASA_RangedWeapon::WeaponAction() {
 	Fire();
 } 
 
-void USA_RangedWeapon::Fire() {
+void ASA_RangedWeapon::Fire() {
 	if (Character == nullptr || Character->GetController() == nullptr) {
 		return;
 	}
@@ -77,16 +78,16 @@ void USA_RangedWeapon::Fire() {
 	}
 }
 
-void USA_RangedWeapon::SetFire(){
+void ASA_RangedWeapon::SetFire(){
 	bIsFiring = true;
 }
 
-void USA_RangedWeapon::ReleaseFire(){
+void ASA_RangedWeapon::ReleaseFire(){
 	UE_LOG(LogTemp, Warning, TEXT("Release"));
 	bIsFiring = false;
 }
 
-void USA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
+void ASA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
 	Character = TargetCharacter;
 	if (Character == nullptr) {
 		return;
@@ -113,8 +114,8 @@ void USA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent)) {
 			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &USA_RangedWeapon::SetFire);
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &USA_RangedWeapon::ReleaseFire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ASA_RangedWeapon::SetFire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ASA_RangedWeapon::ReleaseFire);
 
 		}
 	}

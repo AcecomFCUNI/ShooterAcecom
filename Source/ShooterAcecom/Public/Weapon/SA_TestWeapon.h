@@ -10,10 +10,10 @@
  * 
  */
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SHOOTERACECOM_API USA_TestWeapon : public USA_RangedWeapon {
+class SHOOTERACECOM_API ASA_TestWeapon : public ASA_RangedWeapon {
 	GENERATED_BODY()
 	
 public:
-	 USA_TestWeapon();
+	 ASA_TestWeapon();
 	
 };

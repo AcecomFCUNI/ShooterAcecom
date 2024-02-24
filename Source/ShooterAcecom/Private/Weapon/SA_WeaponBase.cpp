@@ -3,4 +3,4 @@
 
 #include "Weapon\SA_WeaponBase.h"
 
-void USA_WeaponBase::WeaponAction() {}
+void ASA_WeaponBase::WeaponAction() {}
