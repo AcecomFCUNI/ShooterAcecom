@@ -16,11 +16,21 @@ class SHOOTERACECOM_API ASA_WeaponBase : public AActor {
 
 protected:
 	/** The Character holding this weapon*/
+	UPROPERTY()
 	AShooterAcecomCharacter* Character;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	USceneComponent* PivotComponent;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	USkeletalMeshComponent* SkeletalMeshComponent;
 
 	UFUNCTION()
 	virtual void WeaponAction();
 
+public:
+
+	ASA_WeaponBase();
 	
 
 };
