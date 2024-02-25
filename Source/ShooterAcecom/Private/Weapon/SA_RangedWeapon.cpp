@@ -21,6 +21,39 @@ void ASA_RangedWeapon::TickActor(float DeltaTime, ELevelTick TickType,
 	Fire();
 }
 
+void ASA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
+	Character = TargetCharacter;
+	if (Character == nullptr) {
+		return;
+	}
+
+	// Attach the weapon to the First Person Character
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	AttachToComponent(Character->GetMesh(), AttachmentRules);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *Character->GetMesh()->GetChildComponent(0)->GetName());
+
+	Character->GetMesh()->GetChildComponent(0)->SetRelativeLocation(FVector(21, 17, 40));
+	Character->GetMesh()->GetChildComponent(0)->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());
+
+	// switch bHasRifle so the animation blueprint can switch to another animation set
+	Character->SetHasRifle(true);
+
+	// Set up action bindings
+	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController())) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
+			// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
+			Subsystem->AddMappingContext(FireMappingContext, 1);
+		}
+
+		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent)) {
+			// Fire
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ASA_RangedWeapon::SetFire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ASA_RangedWeapon::ReleaseFire);
+
+		}
+	}
+}
 
 void ASA_RangedWeapon::WeaponAction() {
 	Fire();
@@ -35,7 +68,13 @@ void ASA_RangedWeapon::Fire() {
 		return;
 	}
 
+	if(bIsSemiAutomatic && bFiredOnce)
+	{
+		return;
+	}
+
 	bCanFire = false;
+	bFiredOnce = true;
 	FTimerHandle TimerHandler;
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandler, [&] {
@@ -81,41 +120,6 @@ void ASA_RangedWeapon::SetFire(){
 }
 
 void ASA_RangedWeapon::ReleaseFire(){
-	UE_LOG(LogTemp, Warning, TEXT("Release"));
 	bIsFiring = false;
+	bFiredOnce = false;
 }
-
-void ASA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
-	Character = TargetCharacter;
-	if (Character == nullptr) {
-		return;
-	}
-
-	// Attach the weapon to the First Person Character
-	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	AttachToComponent(Character->GetMesh(), AttachmentRules);
-
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *Character->GetMesh()->GetChildComponent(0)->GetName());
-	
-	Character->GetMesh()->GetChildComponent(0)->SetRelativeLocation(FVector(21, 17, 40));
-	Character->GetMesh()->GetChildComponent(0)->SetRelativeRotation(FRotator(0, -90,0 ).Quaternion());
-	
-	// switch bHasRifle so the animation blueprint can switch to another animation set
-	Character->SetHasRifle(true);
-
-	// Set up action bindings
-	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController())) {
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
-			// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
-			Subsystem->AddMappingContext(FireMappingContext, 1);
-		}
-
-		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent)) {
-			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ASA_RangedWeapon::SetFire);
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ASA_RangedWeapon::ReleaseFire);
-
-		}
-	}
-}
-

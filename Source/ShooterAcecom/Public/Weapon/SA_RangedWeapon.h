@@ -23,9 +23,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool bCanFire;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	bool bIsAutomatic;
-	
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	bool bIsSemiAutomatic = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bFiredOnce = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* FireSound;
 	

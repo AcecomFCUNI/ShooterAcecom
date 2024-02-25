@@ -6,6 +6,5 @@
 ASA_TestWeapon::ASA_TestWeapon() {
 	ShootRange = 1000.0f;
 	FireRate = .5f;
-	bIsAutomatic = true;
 }
 
