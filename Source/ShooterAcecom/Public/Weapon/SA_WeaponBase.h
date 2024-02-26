@@ -19,15 +19,19 @@ protected:
 	UPROPERTY()
 	AShooterAcecomCharacter* Character;
 
+	/** Pivot for Rotation*/
 	UPROPERTY(VisibleDefaultsOnly)
 	USceneComponent* PivotComponent;
 
+	/** Mesh Component*/
 	UPROPERTY(VisibleDefaultsOnly)
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
 	UFUNCTION()
 	virtual void WeaponAction();
-
+	
+	virtual void TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
+	
 public:
 
 	ASA_WeaponBase();

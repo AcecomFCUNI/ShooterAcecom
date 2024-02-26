@@ -31,10 +31,7 @@ void ASA_RangedWeapon::AttachWeapon(AShooterAcecomCharacter* TargetCharacter) {
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh(), AttachmentRules);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *Character->GetMesh()->GetChildComponent(0)->GetName());
-
-	Character->GetMesh()->GetChildComponent(0)->SetRelativeLocation(FVector(21, 17, 40));
-	Character->GetMesh()->GetChildComponent(0)->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());
+	Character->GetMesh()->GetChildComponent(0)->SetRelativeLocation(FVector(-16, 1, 135));
 
 	// switch bHasRifle so the animation blueprint can switch to another animation set
 	Character->SetHasRifle(true);
