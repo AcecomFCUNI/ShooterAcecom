@@ -6,7 +6,11 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
+#include <ShooterAcecom/ShooterAcecom.h>
 #include "ShooterAcecomCharacter.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AShooterAcecomCharacter*, Character);
 
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -14,6 +18,7 @@ class USceneComponent;
 class UCameraComponent;
 class UAnimMontage;
 class USoundBase;
+class USA_CharacterGameplayAbility;
 
 UCLASS(config=Game)
 class AShooterAcecomCharacter : public ACharacter, public IAbilitySystemInterface
@@ -38,7 +43,33 @@ class AShooterAcecomCharacter : public ACharacter, public IAbilitySystemInterfac
 
 	
 public:
-	AShooterAcecomCharacter();
+	AShooterAcecomCharacter(const class FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY(BlueprintAssignable, Category = "Shooter|Character")
+	FCharacterDiedDelegate OnCharacterDied;
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Character")
+	virtual bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Character")
+	virtual int32 GetAbilityLevel(SA_AbilityID AbilityId) const;
+
+	virtual void RemoveCharacterAbilities() const;
+
+	virtual void Die();
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Character")
+	virtual void FinishDying();
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Character|Attributes")
+	float GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Character|Attributes")
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Character|Attributes")
+	float GetMaxHealth() const;
+
 
 protected:
 	virtual void BeginPlay();
@@ -73,20 +104,52 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
-	class UAbilitySystemComponent* AbilitySystemComponent;
-	
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shooter|Abilities")
+	TWeakObjectPtr<class USA_CharacterAbilitySystemComp> AbilitySystemComponent;
 
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void GrantAbility(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level, int32 InputCode);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shooter|Abilities")
+	TWeakObjectPtr<class USA_CharacterAttributeSet> AttributeSet;
 
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	FGameplayTag DeadTag;
+	FGameplayTag EffectRemoveOnDeathTag;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Shooter|Character")
+	FText CharacterName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shooter|Animation")
+	UAnimMontage* DeathMontage;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Shooter|Abilities")
+	TArray<TSubclassOf<USA_CharacterGameplayAbility>> CharacterAbilities;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Shooter|Abilities")
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Shooter|Abilities")
+	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
+
+	virtual void AddCharacterAbilities();
+
+	virtual void InitializeAttributes();
+
+	virtual void AddStartupEffects();
+
+	virtual void SetHealth(float Health);
+
+	virtual void SetMaxHealth(float MaxHealth);
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Abilities")
+	void GrantAbility(TSubclassOf<USA_CharacterGameplayAbility> AbilityClass, int32 Level, int32 InputCode);
+
+	UFUNCTION(BlueprintCallable, Category = "Shooter|Abilities")
 	void ActivateAbility(int32 InputCode);
 
 public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetCameraComponent() const { return CameraComponent; }
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 
 };

@@ -8,5 +8,4 @@ void USA_AssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
 	UAbilitySystemGlobals::Get().InitGlobalData();
-	UE_LOG(LogTemp, Error, TEXT("Asset Manager Loaded"));
 }
